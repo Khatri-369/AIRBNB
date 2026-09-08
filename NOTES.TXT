@@ -1,0 +1,82 @@
+"Take all the individual elements/properties from this thing and spread them out here."
+
+It works differently depending on whether you're using an array or an object.
+
+1. With arrays
+let arr1 = [1, 2, 3];
+
+let arr2 = [...arr1];
+
+...arr1 spreads:
+
+[1, 2, 3]
+ ↓
+ 1, 2, 3
+
+So:
+
+arr2 = [1, 2, 3];
+
+Without spread:
+
+let arr2 = [arr1];
+
+you get:
+
+[[1, 2, 3]]
+
+because the entire array becomes one element.
+
+2. With objects
+
+This is what you're using in your code.
+
+let user = {
+    name: "Om",
+    age: 20
+};
+
+let newUser = {
+    ...user
+};
+
+...user spreads the properties:
+
+{
+    name: "Om",
+    age: 20
+}
+
+So newUser becomes:
+
+{
+    name: "Om",
+    age: 20
+}
+3. You can add more properties
+let newUser = {
+    ...user,
+    city: "Vadodara"
+};
+
+Result:
+
+{
+    name: "Om",
+    age: 20,
+    city: "Vadodara"
+}
+4. You can override properties
+let newUser = {
+    ...user,
+    age: 21
+};
+
+Result:
+
+{
+    name: "Om",
+    age: 21
+}
+
+Because the later age: 21 overrides the age: 20 that was spread earlier.

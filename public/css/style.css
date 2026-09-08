@@ -1,0 +1,136 @@
+body {
+    font-family: "Plus Jakarta Sans", sans-serif !important;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+.container {
+    flex: 1;
+}
+
+.navbar {
+    width: 100%;
+    height: 5rem;
+    background-color: white;
+}
+
+.fa-compass {
+    color: #ff3366;
+    font-size: 1.5rem;
+}
+
+.nav-link {
+    color: black !important;
+}
+
+a {
+    text-decoration: none !important;
+    color: black !important;
+}
+
+.f-info-links a {
+    text-decoration: none;
+    color: black !important;
+}
+
+.f-info-links a:hover {
+    text-decoration: underline !important;
+}
+
+.f-info-links {
+    width: 100%;
+}
+
+.f-info-socials {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.f-info-socials i {
+    font-size: 2rem;
+    margin-right: 1rem;
+
+}
+
+.f-info {
+    display: flex;
+    height: 8rem;
+    flex-wrap: wrap;
+    justify-content: space-evenly;
+    align-items: center;
+    text-align: center;
+    background-color: #ebebeb;
+    margin-top: 2rem;
+}
+
+.f-info-socials {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/*cards*/
+.listing-card {
+    border: none !important;
+    margin-bottom: 2rem;
+}
+
+.card-img-top {
+    border-radius: 1rem !important;
+    width: 100% !important;
+    object-fit: cover !important;
+    height: 20rem !important;
+}
+
+.card-body {
+    padding: 0 !important;
+}
+
+.card-text {
+    font-weight: 400;
+}
+
+.listing-link {
+    text-decoration: none;
+}
+
+/* Card hover effect */
+.card-img-overlay {
+    opacity: 0;
+    background-color: white;
+}
+
+.card-img-overlay:hover {
+    opacity: 0.2;
+    background-color: white;
+}
+
+/* New & Edit Listing Button */
+.add-btn,
+.edit-btn {
+    background-color: #fe424d !important;
+    border: none !important;
+    border-radius: 0.5rem !important;
+    padding: 0.6rem 1.5rem !important;
+    font-weight: 500 !important;
+}
+
+.add-btn:hover,
+.edit-btn:hover {
+    background-color: #e0323c !important;
+}
+
+/* Show Details Page */
+.show-img {
+    height: 30vh !important;
+    border-radius: 1rem !important;
+    object-fit: cover !important;
+}
+
+.show-card {
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+}
