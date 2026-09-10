@@ -79,4 +79,21 @@ Result:
     age: 21
 }
 
-Because the later age: 21 overrides the age: 20 that was spread earlier.
+Because the later age: 21 overrides the age: 20 that was spread earlier.4
+
+
+to validate form we doing 
+class="needs-validation" novalidate
+and add the js file 
+<script src="/js/script.js"></script>
+we can make valid feedback and non-valid feedback div class manually 
+
+| Thing                  | Purpose                                     |
+| ---------------------- | ------------------------------------------- |
+| `ExpressError`         | **Create your own custom error**            |
+| `asyncWrap`            | **Catch errors from async route functions** |
+| `app.all("/{*splat}")` | **Handle invalid/non-existing URLs → 404**  |
+| `app.use((err,...))`   | **Final/default error handler**             |
+
+
+we are using joi to validate our schema
