@@ -97,3 +97,7 @@ we can make valid feedback and non-valid feedback div class manually
 
 
 we are using joi to validate our schema
+
+error has two types -> client side and server side
+to solve client side -> using validation in ejs file,BOOTSTRAP HTML Validation (novalid+script.js+class="needs-validation")
+to solve server side -> JOI(DB SCHEMA VALIDATION IN app.js),MANUAL VALIDATION(ExpressError.js+asyncWrap+app.use(errorHandler))

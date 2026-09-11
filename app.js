@@ -4,7 +4,13 @@ const app = express();
 const path = require("path");
 const methodOverride = require("method-override");
 const ejsMate = require("ejs-mate");
+//JOI SCHEMA
 const { listingSchema } = require("./Schema.js");
+//WRAPASYNC
+const wrapAsync = require("./utils/wrapAsync.js");
+const ExpressError = require("./public/js/ExpressError.js");
+//MODELS
+const Listing = require("./model/listing.js");
 
 //MIDDLEWARE
 app.use(express.json());
@@ -15,12 +21,7 @@ app.set("view engine", "ejs"); //TELL SERVER TO RENDER EJS FILES
 app.set("views", path.join(__dirname, "views")); //TELL SERVER WHERE TO FIND EJS FILES
 app.use(express.static(path.join(__dirname, "/public")));
 
-//WRAPASYNC
-const wrapAsync = require("./utils/wrapAsync.js");
-const ExpressError = require("./public/js/ExpressError.js");
 
-//MODELS
-const Listing = require("./model/listing.js");
 
 mongoose.connect("mongodb://localhost:27017/airbnb").then(() => {
     console.log("DB CONNECTED");
@@ -33,8 +34,7 @@ const validateListing = (req, res, next) => {
     let { error } = listingSchema.validate(req.body);
     if (error) {
         let errMsg = error.details.map((el) => el.message).join(",");
-        throw new ExpressError(400, errMsg);
-        // next(err); --> Done automatically by Express for synchronous code
+        return next(new ExpressError(400, errMsg));
     } else {
         next();
     }
@@ -50,7 +50,6 @@ app.get("/listings/new", (req, res) => {
 });
 
 app.post("/listings", validateListing, wrapAsync(async (req, res, next) => {
-    console.log(result);
     const newListing = new Listing(req.body.listing);
     await newListing.save();
     res.redirect("/listings");
@@ -64,6 +63,7 @@ app.get("/listings", wrapAsync(async (req, res) => {
 app.get("/listings/:id", wrapAsync(async (req, res, next) => {
     const id = req.params.id;
     const listing = await Listing.findById(id);
+    //CUSTOM ERROR
     if (!listing) {
         return next(new ExpressError(404, "listing not found"));
     }
@@ -71,18 +71,12 @@ app.get("/listings/:id", wrapAsync(async (req, res, next) => {
 }));
 
 //UPDATE ROUTE
-app.get("/listings/:id/edit", validateListing, wrapAsync(async (req, res) => {
-    // if (!req.body.listing) {
-    //     throw new ExpressError(400, "SEND VALID DATA");
-    // }
+app.get("/listings/:id/edit", wrapAsync(async (req, res) => {
     const id = req.params.id;
     const listing = await Listing.findById(id);
-    // if (!listing) {
-    //     throw new ExpressError(404, "listing not found");
-    // }
     res.render("./listings/edit.ejs", { listing });
 }));
-app.put("/listings/:id", wrapAsync(async (req, res) => {
+app.put("/listings/:id", validateListing, wrapAsync(async (req, res) => {
     const id = req.params.id;
     await Listing.findByIdAndUpdate(id, { ...req.body.listing });
     res.redirect(`/listings/${id}`);
@@ -99,10 +93,13 @@ app.all(/(.*)/, (req, res, next) => {
     next(new ExpressError(404, "page not found"));
 });
 
+//ERROR HANDLING MIDDLEWARE
 app.use((err, req, res, next) => {
     let { status = 500, message = "Something went wrong!" } = err;
     res.status(status).render("listings/error.ejs", { err });
 });
+
+
 app.listen(8080, () => {
     console.log("SERVER IS LISTNING TO PORT 8080");
 });

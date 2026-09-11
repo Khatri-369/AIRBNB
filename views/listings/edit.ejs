@@ -33,10 +33,10 @@
                     <div class="row">
                         <div class="mb-3 col-md-4">
                             <label for="price" class="form-label">Price</label>
-                            <input name="listing[price]" id="price" value="<%= listing.price %>" type="number"
+                            <input name="listing[price]" id="price" value="<%= listing.price %>" type="number" min="1"
                                 class="form-control" required>
                             <div class="valid-feedback">Looks Good</div>
-                            <div class="invalid-feedback">Price Is Required</div>
+                            <div class="invalid-feedback">Price should be greater then 0</div>
                         </div>
 
                         <div class="mb-3 col-md-8">
