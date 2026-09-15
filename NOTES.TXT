@@ -101,3 +101,16 @@ we are using joi to validate our schema
 error has two types -> client side and server side
 to solve client side -> using validation in ejs file,BOOTSTRAP HTML Validation (novalid+script.js+class="needs-validation")
 to solve server side -> JOI(DB SCHEMA VALIDATION IN app.js),MANUAL VALIDATION(ExpressError.js+asyncWrap+app.use(errorHandler))
+
+to get params of parent in child we do express.Router({ mergeParams: true })
+
+cookie store as {key: value} format 
+res.cookie("name", value, {maxAge: 1000000})
+
+to prevent tempring the cookie we send signed cookie
+res.cookie("greet", "namaste", { signed: true });
+
+signed cookies can be accessed using req.signedCookies
+res.clearCookie()
+req.cookies() gives u only unsigned cookies
+req.signedCookies() gives u only signed cookies
