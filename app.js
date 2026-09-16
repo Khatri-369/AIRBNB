@@ -4,7 +4,13 @@ const app = express();
 const path = require("path");
 const methodOverride = require("method-override");
 const ejsMate = require("ejs-mate");
-//ERRORS
+
+//PASSPORT JS
+const passport = require("passport");
+const LocalStrategy = require("passport-local");
+const User = require("./model/user.js");
+
+//ERRORS    
 const ExpressError = require("./public/js/ExpressError.js");
 //COOKIE
 const cookieparser = require("cookie-parser");
@@ -14,8 +20,9 @@ const session = require("express-session");
 //FLASH
 const flash = require("express-flash");
 //ROUTES
-const listings = require("./routes/listing.js");
-const reviews = require("./routes/review.js");
+const listingsRouters = require("./routes/listing.js");
+const reviewsRouters = require("./routes/review.js");
+const userRouter = require("./routes/user.js");
 
 //MIDDLEWARE
 app.use(express.json());
@@ -26,20 +33,25 @@ app.set("view engine", "ejs"); //TELL SERVER TO RENDER EJS FILES
 app.set("views", path.join(__dirname, "views")); //TELL SERVER WHERE TO FIND EJS FILES
 app.use(express.static(path.join(__dirname, "/public")));
 
-
 const sessionOptions = {
     secret: "mysupersecretstring",
     resave: false,
     saveUninitialized: true,
     cookie: {
-        expires: Date.now() + 7 * 24 * 60 * 60 * 1000,
-        maxAge: 7 * 24 * 60 * 60 * 1000,
-        httpOnly: true,
+        expires: Date.now() + 7 * 24 * 60 * 60 * 1000, //WHEN SHOULD SESSION EXPIRE
+        maxAge: 7 * 24 * 60 * 60 * 1000, //HOW LONG THE COOKIE SHOULD LIVE
+        httpOnly: true, //CAN'T ACCESS COOKIE FROM CLIENT SIDE
     }
 };
 app.use(session(sessionOptions));
 app.use(flash());
 
+//PASSPORT AUTHENTICATION 
+app.use(passport.initialize());
+app.use(passport.session());
+passport.use(new LocalStrategy(User.authenticate()));
+passport.serializeUser(User.serializeUser()); //TO STORE SERAILZE USERS INTO THE SESSIONS
+passport.deserializeUser(User.deserializeUser());//TO STORE DE SERAILZE USERS INTO THE SESSIONS
 
 mongoose.connect("mongodb://localhost:27017/airbnb").then(() => {
     console.log("DB CONNECTED");
@@ -48,9 +60,9 @@ mongoose.connect("mongodb://localhost:27017/airbnb").then(() => {
     console.log(err);
 });
 
-app.get("/", (req, res) => {
-    res.send("GOTO /listings to see all listings");
-});
+// app.get("/", (req, res) => {
+//     res.send("GOTO /listings to see all listings");
+// });
 
 
 app.use((req, res, next) => {
@@ -58,54 +70,25 @@ app.use((req, res, next) => {
     res.locals.errorMsg = req.flash("error");
     next();
 });
-//COOKIES TRIAL
-// app.get("/register", (req, res) => {
-//     let { name = "ananomus" } = req.query;
-//     req.session.name = name;
-//     if (name === "ananomus") {
-//         req.flash("error", "USER NOT REGISTER");
-//     }
-//     else {
-//         req.flash("success", "REGISTRATION SUCCESSFULL");
-//     }
-//     res.redirect("/hello");
-// });
-// app.get("/hello", (req, res) => {
-//     res.render("listings/page.ejs", { name: req.session.name });
-// });
-// app.get("/test", (req, res) => {
-//     res.send("TEST SUCCESSFULL");
-// });
-// app.get("/verify", (req, res) => {
-//     console.log(req.signedCookies);
-//     res.send("RESPONSE SEND");
-// });
-// app.get("/signedcookies", (req, res) => {
-//     res.cookie("greet", "namaste", { signed: true });
-//     res.cookie("hi", "khatri", { signed: true });
-//     res.cookie("love", "19", { maxAge: 199999 });
-//     res.send("SENT YOU SIGNED COOKIES");
-// });
 
-// app.get("/getcookies", (req, res) => {
-//     res.cookie("madein", "India");
-//     res.cookie("greet", "namaste");
-//     res.cookie("age", "21");
-//     let { khatri = "hii" } = req.cookies;
-//     console.dir(req.cookies);
-//     res.send(`SENT YOU SOME COOKIES ${khatri}`);
-// });
+app.get("/demo", async (req, res) => {
+    let fakeuser = new User({
+        email: "student@gmail.com",
+        username: "delta_student",
+    });
 
-// app.get("/clear", (req, res) => {
-//     res.clearCookie("age");
-//     res.send("cookie cleared");
-// })
+    let registerUser = await User.register(fakeuser, "helloworld"); //User.register(detail,password);
+    res.send(registerUser);
+});
 
 // LISTINGS ROUTE
-app.use("/listings", listings);
+app.use("/listings", listingsRouters);
 
 // REVIEWS ROUTE
-app.use("/listings/:id/reviews", reviews);
+app.use("/listings/:id/reviews", reviewsRouters);
+
+//USER ROUTE
+app.use("/", userRouter);
 
 //PAGE NOT FOUND HANDLER
 app.all(/(.*)/, (req, res, next) => {

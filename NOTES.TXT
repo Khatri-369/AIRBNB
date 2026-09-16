@@ -171,21 +171,63 @@ javascript
     }
 }
 
+//COOKIES TRIAL
+// app.get("/register", (req, res) => {
+//     let { name = "ananomus" } = req.query;
+//     req.session.name = name;
+//     if (name === "ananomus") {
+//         req.flash("error", "USER NOT REGISTER");
+//     }
+//     else {
+//         req.flash("success", "REGISTRATION SUCCESSFULL");
+//     }
+//     res.redirect("/hello");
+// });
+// app.get("/hello", (req, res) => {
+//     res.render("listings/page.ejs", { name: req.session.name });
+// });
+// app.get("/test", (req, res) => {
+//     res.send("TEST SUCCESSFULL");
+// });
+// app.get("/verify", (req, res) => {
+//     console.log(req.signedCookies);
+//     res.send("RESPONSE SEND");
+// });
+// app.get("/signedcookies", (req, res) => {
+//     res.cookie("greet", "namaste", { signed: true });
+//     res.cookie("hi", "khatri", { signed: true });
+//     res.cookie("love", "19", { maxAge: 199999 });
+//     res.send("SENT YOU SIGNED COOKIES");
+// });
+
+// app.get("/getcookies", (req, res) => {
+//     res.cookie("madein", "India");
+//     res.cookie("greet", "namaste");
+//     res.cookie("age", "21");
+//     let { khatri = "hii" } = req.cookies;
+//     console.dir(req.cookies);
+//     res.send(`SENT YOU SOME COOKIES ${khatri}`);
+// });
+
+// app.get("/clear", (req, res) => {
+//     res.clearCookie("age");
+//     res.send("cookie cleared");
+// })
+
+
 
 when we require express-session and write app.use(session(sessionOption)); we get the session id in cookies for only that request
 
 authentication vs authrarization
-authentication :- 
+authentication :-
     signup and login
     check wheather you are real user or not 
-    
+    storing password in HASH formate
+    we do signup only once but login multiple times
+
 authrization :-
     it is a process of verifying what specific application,files and data user has access to
     eg :- when user is login (authentication) then access to edit his profile (authrization)
-
-authentication :-
-    storing password in HASH formate
-    we do signup only once but login multiple times
 
 HASHING FUNCTION CHARACTERISTICS:-
 ->    hashing function gives fix length of output for any input
@@ -198,3 +240,387 @@ salting ->
         to make secure the password.it is a random 32 or more character string of char and number and then hashing them
         eg :- plain password "123456789" and salt "abcdefgh1234567890"
                 plain password + salt => hashing function => HASHED PASSWORD
+
+passport js -->
+    it is a authentication midleware in node.js
+    it provide features like authentication and authrarization
+    
+    npm i passport
+    npm i passport-local
+    npm i passport-local-mongoose
+
+
+==================================================
+PASSPORT.JS AUTHENTICATION + SESSION NOTES
+==================================================
+
+Passport.js is an authentication middleware for Node.js/Express.
+
+It helps handle:
+- Login
+- User authentication
+- Sessions
+- Maintaining logged-in users
+
+
+--------------------------------------------------
+1. PASSPORT INITIALIZE
+--------------------------------------------------
+
+Code:
+
+app.use(passport.initialize());
+
+Function:
+- Initializes Passport in the Express application.
+- Makes Passport ready to handle authentication.
+- Required before using Passport authentication methods.
+
+Think:
+"Start Passport and make it ready."
+
+
+--------------------------------------------------
+2. PASSPORT SESSION
+--------------------------------------------------
+
+Code:
+
+app.use(passport.session());
+
+Function:
+- Connects Passport with Express sessions.
+- Maintains the user's login across multiple requests.
+- Allows Passport to restore the logged-in user.
+- Makes the authenticated user available through:
+
+req.user
+
+IMPORTANT:
+passport.session() should come AFTER the Express session middleware.
+
+Example:
+
+app.use(session(sessionOptions));
+
+app.use(passport.initialize());
+app.use(passport.session());
+
+
+--------------------------------------------------
+3. LOCAL STRATEGY
+--------------------------------------------------
+
+Code:
+
+passport.use(new LocalStrategy(User.authenticate()));
+
+NOTE:
+Correct spelling is LocalStrategy, NOT LocalStratergy.
+
+Function:
+- Tells Passport to use username/password authentication.
+- LocalStrategy is used when authentication is performed using
+  credentials stored in our own database.
+- User.authenticate() checks whether the username and password
+  are correct.
+
+Flow:
+
+username + password
+        ↓
+LocalStrategy
+        ↓
+User.authenticate()
+        ↓
+Check database
+        ↓
+Correct → Login successful
+Wrong   → Authentication failed
+
+--------------------------------------------------
+4. SERIALIZE USER
+--------------------------------------------------
+
+Code:
+
+passport.serializeUser(User.serializeUser());
+
+Meaning:
+Serialize = User → Store user ID in session
+
+After successful login, Passport does NOT normally store the
+entire user document in the session.
+
+Instead, it stores a unique identifier, usually the user's _id.
+
+Example User:
+
+{
+    _id: "abc123",
+    username: "om",
+    email: "om@gmail.com"
+}
+
+Session stores approximately:
+
+user = "abc123"
+
+Purpose:
+- Converts the logged-in user into a small piece of information
+  that can be stored in the session.
+- Usually stores the user's ID.
+
+Easy meaning:
+
+"Which information about the user should I store in the session?"
+
+
+--------------------------------------------------
+5. DESERIALIZE USER
+--------------------------------------------------
+
+Code:
+
+passport.deserializeUser(User.deserializeUser());
+
+Meaning:
+Deserialize = Session User ID → Complete User
+
+When a new request comes in, Passport gets the user ID from
+the session.
+
+Example:
+
+Session:
+user = "abc123"
+
+Then:
+
+deserializeUser()
+        ↓
+Find user with ID "abc123" in database
+        ↓
+Get complete user document
+        ↓
+req.user
+
+
+Example:
+
+req.user = {
+    _id: "abc123",
+    username: "om",
+    email: "om@gmail.com"
+}
+
+
+Easy meaning:
+
+"I have the user's ID from the session.
+Now find the complete user from the database."
+
+
+--------------------------------------------------
+6. COMPLETE FLOW
+--------------------------------------------------
+
+User enters:
+
+Username: om
+Password: 123456
+
+        ↓
+
+passport.authenticate("local")
+
+        ↓
+
+LocalStrategy
+
+        ↓
+
+User.authenticate()
+
+        ↓
+
+Check username + password in database
+
+        ↓
+
+If correct:
+
+serializeUser()
+
+        ↓
+
+User ID is stored in session
+
+        ↓
+
+Browser sends session information with
+future requests
+
+        ↓
+
+passport.session()
+
+        ↓
+
+deserializeUser()
+
+        ↓
+
+User ID → Find user in database
+
+        ↓
+
+Complete user object
+
+        ↓
+
+req.user
+
+
+--------------------------------------------------
+7. SIMPLE DIAGRAM
+--------------------------------------------------
+
+LOGIN:
+
+Username + Password
+        ↓
+LocalStrategy
+        ↓
+User.authenticate()
+        ↓
+Database
+        ↓
+Authentication Successful
+        ↓
+serializeUser()
+        ↓
+User ID
+        ↓
+Session
+
+
+NEXT REQUEST:
+
+Session
+  ↓
+User ID
+  ↓
+deserializeUser()
+  ↓
+Database
+  ↓
+Complete User
+  ↓
+req.user
+
+
+--------------------------------------------------
+8. MEANING OF EACH LINE
+--------------------------------------------------
+
+app.use(passport.initialize());
+
+→ Initialize Passport.
+
+
+app.use(passport.session());
+
+→ Enable Passport authentication using sessions.
+
+
+passport.use(new LocalStrategy(User.authenticate()));
+
+→ Use username/password authentication and verify credentials
+  using User.authenticate().
+
+
+passport.serializeUser(User.serializeUser());
+
+→ Store the user's ID in the session after successful login.
+
+
+passport.deserializeUser(User.deserializeUser());
+
+→ Use the ID stored in the session to retrieve the complete
+  user from the database.
+
+
+--------------------------------------------------
+9. MOST IMPORTANT CONCEPT
+--------------------------------------------------
+
+AUTHENTICATION:
+
+"Is the username and password correct?"
+
+        ↓
+
+User.authenticate()
+
+
+SERIALIZATION:
+
+"After login, what should I store in the session?"
+
+        ↓
+
+User.serializeUser()
+
+
+DESERIALIZATION:
+
+"I have the user ID from the session.
+Which user is this?"
+
+        ↓
+
+User.deserializeUser()
+
+
+--------------------------------------------------
+10. EASY WAY TO REMEMBER
+--------------------------------------------------
+
+LOGIN
+  ↓
+AUTHENTICATE
+  ↓
+SERIALIZE
+  ↓
+STORE ID IN SESSION
+  ↓
+NEXT REQUEST
+  ↓
+DESERIALIZE
+  ↓
+GET USER
+  ↓
+req.user
+
+
+==================================================
+ONE-LINE SUMMARY
+==================================================
+
+initialize()
+→ Start Passport
+
+session()
+→ Maintain login using sessions
+
+LocalStrategy()
+→ Define username/password authentication
+
+serializeUser()
+→ User → ID → Session
+
+deserializeUser()
+→ ID → User → req.user
+
+==================================================
