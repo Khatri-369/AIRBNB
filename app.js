@@ -26,13 +26,20 @@ app.set("view engine", "ejs"); //TELL SERVER TO RENDER EJS FILES
 app.set("views", path.join(__dirname, "views")); //TELL SERVER WHERE TO FIND EJS FILES
 app.use(express.static(path.join(__dirname, "/public")));
 
+
 const sessionOptions = {
     secret: "mysupersecretstring",
     resave: false,
     saveUninitialized: true,
+    cookie: {
+        expires: Date.now() + 7 * 24 * 60 * 60 * 1000,
+        maxAge: 7 * 24 * 60 * 60 * 1000,
+        httpOnly: true,
+    }
 };
 app.use(session(sessionOptions));
 app.use(flash());
+
 
 mongoose.connect("mongodb://localhost:27017/airbnb").then(() => {
     console.log("DB CONNECTED");
@@ -45,16 +52,27 @@ app.get("/", (req, res) => {
     res.send("GOTO /listings to see all listings");
 });
 
+
+app.use((req, res, next) => {
+    res.locals.successMsg = req.flash("success");
+    res.locals.errorMsg = req.flash("error");
+    next();
+});
 //COOKIES TRIAL
-app.get("/register", (req, res) => {
-    let { name = "ananomus" } = req.query;
-    req.session.name = name;
-    req.flash("success", "REGISTRATION SUCCESSFULL");
-    res.redirect("/hello");
-});
-app.get("/hello", (req, res) => {
-    res.render("listings/page.ejs", { name: req.session.name, msg: req.flash("success") });
-});
+// app.get("/register", (req, res) => {
+//     let { name = "ananomus" } = req.query;
+//     req.session.name = name;
+//     if (name === "ananomus") {
+//         req.flash("error", "USER NOT REGISTER");
+//     }
+//     else {
+//         req.flash("success", "REGISTRATION SUCCESSFULL");
+//     }
+//     res.redirect("/hello");
+// });
+// app.get("/hello", (req, res) => {
+//     res.render("listings/page.ejs", { name: req.session.name });
+// });
 // app.get("/test", (req, res) => {
 //     res.send("TEST SUCCESSFULL");
 // });

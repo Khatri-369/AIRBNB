@@ -81,6 +81,11 @@ Result:
 
 Because the later age: 21 overrides the age: 20 that was spread earlier.4
 
+middleware of two types -> 
+1.with path  eg :- app.use("/listings", listings);
+2.without path eg :- app.use(function(req,res,next){
+    
+})
 
 to validate form we doing 
 class="needs-validation" novalidate
@@ -133,3 +138,63 @@ STATELESS PROTOCOLS :-
 does not contains status and information
 eg :- http(Hyper Text Transfer Protocol)
 we making server using express is stateless protocols.
+
+res.locals :- 
+it is used to pass data to templates (ejs files).
+it is just like res.locals and res.locals are created when request start and destory when request end
+ eg :- res.locals.success = "success";
+ res.locals.failure = "failure";
+
+ In Express, res.locals is a special object. Any property attached to res.locals is automatically exposed as a variable in all EJS templates rendered during that request cycle.
+
+ app.use((req, res, next) => {
+    res.locals.successMsg = req.flash("success");
+    res.locals.errorMsg = req.flash("error");
+    next();
+});
+
+Yes, exactly! connect-flash stores and returns all flash messages as an Array.
+
+Why does it store them in an array?
+Because Express allows you to flash multiple messages under the same category before redirecting:
+
+javascript
+req.flash("success", "New listing created!");
+req.flash("success", "Email notification sent!");
+Internally, inside req.session, connect-flash stores them like this:
+
+javascript
+{
+    flash: {
+        success: ["New listing created!", "Email notification sent!"],
+        error: []
+    }
+}
+
+
+when we require express-session and write app.use(session(sessionOption)); we get the session id in cookies for only that request
+
+authentication vs authrarization
+authentication :- 
+    signup and login
+    check wheather you are real user or not 
+    
+authrization :-
+    it is a process of verifying what specific application,files and data user has access to
+    eg :- when user is login (authentication) then access to edit his profile (authrization)
+
+authentication :-
+    storing password in HASH formate
+    we do signup only once but login multiple times
+
+HASHING FUNCTION CHARACTERISTICS:-
+->    hashing function gives fix length of output for any input
+->    they are one way function 
+        input->output => ✓
+        output->input => X
+->    small change in input leads to large change in output
+
+salting ->
+        to make secure the password.it is a random 32 or more character string of char and number and then hashing them
+        eg :- plain password "123456789" and salt "abcdefgh1234567890"
+                plain password + salt => hashing function => HASHED PASSWORD
