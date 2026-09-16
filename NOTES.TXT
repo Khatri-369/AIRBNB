@@ -107,6 +107,11 @@ to get params of parent in child we do express.Router({ mergeParams: true })
 cookie store as {key: value} format 
 res.cookie("name", value, {maxAge: 1000000})
 
+cookies of two types 
+unsigned,signed
+
+signed cookie helps to prevent the tampering of cookies (we need to do app.use(cookieparser("secretekey")))
+
 to prevent tempring the cookie we send signed cookie
 res.cookie("greet", "namaste", { signed: true });
 
@@ -114,3 +119,17 @@ signed cookies can be accessed using req.signedCookies
 res.clearCookie()
 req.cookies() gives u only unsigned cookies
 req.signedCookies() gives u only signed cookies
+
+what is cookies ?
+Ans : A cookie is a small piece of data sent from a website and stored on the user's computer by the web browser while the user is browsing.
+
+PROTOCOLS :-
+
+STATEFULL PROTOCOLS :-
+having status and information.
+eg :- ftp(file transfer protocol)
+
+STATELESS PROTOCOLS :-
+does not contains status and information
+eg :- http(Hyper Text Transfer Protocol)
+we making server using express is stateless protocols.

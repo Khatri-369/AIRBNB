@@ -9,6 +9,10 @@ const ExpressError = require("./public/js/ExpressError.js");
 //COOKIE
 const cookieparser = require("cookie-parser");
 app.use(cookieparser("secretcode"));
+//SESSION
+const session = require("express-session");
+//FLASH
+const flash = require("express-flash");
 //ROUTES
 const listings = require("./routes/listing.js");
 const reviews = require("./routes/review.js");
@@ -22,6 +26,13 @@ app.set("view engine", "ejs"); //TELL SERVER TO RENDER EJS FILES
 app.set("views", path.join(__dirname, "views")); //TELL SERVER WHERE TO FIND EJS FILES
 app.use(express.static(path.join(__dirname, "/public")));
 
+const sessionOptions = {
+    secret: "mysupersecretstring",
+    resave: false,
+    saveUninitialized: true,
+};
+app.use(session(sessionOptions));
+app.use(flash());
 
 mongoose.connect("mongodb://localhost:27017/airbnb").then(() => {
     console.log("DB CONNECTED");
@@ -35,28 +46,42 @@ app.get("/", (req, res) => {
 });
 
 //COOKIES TRIAL
-app.get("/verify", (req, res) => {
-    console.log(req.signedCookies);
-    res.send("RESPONSE SEND");
+app.get("/register", (req, res) => {
+    let { name = "ananomus" } = req.query;
+    req.session.name = name;
+    req.flash("success", "REGISTRATION SUCCESSFULL");
+    res.redirect("/hello");
 });
-app.get("/signedcookies", (req, res) => {
-    res.cookie("greet", "namaste", { signed: true });
-    res.send("SENT YOU A SIGNED COOKIE");
+app.get("/hello", (req, res) => {
+    res.render("listings/page.ejs", { name: req.session.name, msg: req.flash("success") });
 });
+// app.get("/test", (req, res) => {
+//     res.send("TEST SUCCESSFULL");
+// });
+// app.get("/verify", (req, res) => {
+//     console.log(req.signedCookies);
+//     res.send("RESPONSE SEND");
+// });
+// app.get("/signedcookies", (req, res) => {
+//     res.cookie("greet", "namaste", { signed: true });
+//     res.cookie("hi", "khatri", { signed: true });
+//     res.cookie("love", "19", { maxAge: 199999 });
+//     res.send("SENT YOU SIGNED COOKIES");
+// });
 
-app.get("/getcookies", (req, res) => {
-    res.cookie("madein", "India");
-    res.cookie("greet", "namaste");
-    res.cookie("age", "21");
-    let { khatri = "hii" } = req.cookies;
-    console.dir(req.cookies);
-    res.send(`SENT YOU SOME COOKIES ${khatri}`);
-});
+// app.get("/getcookies", (req, res) => {
+//     res.cookie("madein", "India");
+//     res.cookie("greet", "namaste");
+//     res.cookie("age", "21");
+//     let { khatri = "hii" } = req.cookies;
+//     console.dir(req.cookies);
+//     res.send(`SENT YOU SOME COOKIES ${khatri}`);
+// });
 
-app.get("/clear", (req, res) => {
-    res.clearCookie("age");
-    res.send("cookie cleared");
-})
+// app.get("/clear", (req, res) => {
+//     res.clearCookie("age");
+//     res.send("cookie cleared");
+// })
 
 // LISTINGS ROUTE
 app.use("/listings", listings);
