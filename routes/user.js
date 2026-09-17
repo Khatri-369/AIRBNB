@@ -18,8 +18,13 @@ router.post("/signup", WrapAsync(async (req, res) => {
             username
         });
         const registeredUser = await User.register(newUser, password);
-        req.flash("success", "REGISTER SUCCESSFULLY");
-        res.redirect("/listings");
+        req.login(registeredUser, (err) => {
+            if (err) {
+                return next(err);
+            }
+            req.flash("success", "REGISTER SUCCESSFULLY");
+            res.redirect("/listings");
+        }); // TO LOGIN THE USER DIRECTLY AFTER SIGNUP IT IS A FUNCTION
     } catch (e) {
         req.flash("error", e.message);
         res.redirect("/signup");
@@ -31,9 +36,21 @@ router.get("/login", (req, res) => {
     res.render("users/login.ejs");
 });
 
+//TO AUTHENTICATE THE USER WE USE THE MIDDLEWARE passport.authenticate
+//TO STORE THE USERS INTO THE SESSION WE USE THE MIDDLEWARE req.login
 router.post("/login", passport.authenticate("local", { failureRedirect: "/login", failureFlash: true }), async (req, res) => {
     req.flash("success", "WELCOME TO WANDERLUST ! You are logged in");
     res.redirect("/listings");
 });
 
-module.exports = router;    
+router.get("/logout", (req, res, next) => {
+    req.logout((err) => {
+        if (err) {
+            return next(err);
+        }
+        req.flash("success", "You are logged out successfully!");
+        res.redirect("/listings");
+    });
+});
+
+module.exports = router;

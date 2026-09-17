@@ -64,21 +64,12 @@ mongoose.connect("mongodb://localhost:27017/airbnb").then(() => {
 //     res.send("GOTO /listings to see all listings");
 // });
 
-
+//MIDDLEWARE FOR FLASH MESSAGE
 app.use((req, res, next) => {
     res.locals.successMsg = req.flash("success");
     res.locals.errorMsg = req.flash("error");
+    res.locals.currUser = req.user;
     next();
-});
-
-app.get("/demo", async (req, res) => {
-    let fakeuser = new User({
-        email: "student@gmail.com",
-        username: "delta_student",
-    });
-
-    let registerUser = await User.register(fakeuser, "helloworld"); //User.register(detail,password);
-    res.send(registerUser);
 });
 
 // LISTINGS ROUTE

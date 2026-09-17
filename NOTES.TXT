@@ -141,9 +141,9 @@ we making server using express is stateless protocols.
 
 res.locals :- 
 it is used to pass data to templates (ejs files).
-it is just like res.locals and res.locals are created when request start and destory when request end
+res.locals are created when request start and destory when request end
  eg :- res.locals.success = "success";
- res.locals.failure = "failure";
+       res.locals.failure = "failure";
 
  In Express, res.locals is a special object. Any property attached to res.locals is automatically exposed as a variable in all EJS templates rendered during that request cycle.
 
@@ -214,8 +214,6 @@ javascript
 //     res.send("cookie cleared");
 // })
 
-
-
 when we require express-session and write app.use(session(sessionOption)); we get the session id in cookies for only that request
 
 authentication vs authrarization
@@ -232,14 +230,21 @@ authrization :-
 HASHING FUNCTION CHARACTERISTICS:-
 ->    hashing function gives fix length of output for any input
 ->    they are one way function 
+        eg :- modulo function
         input->output => ✓
         output->input => X
+
 ->    small change in input leads to large change in output
 
 salting ->
         to make secure the password.it is a random 32 or more character string of char and number and then hashing them
-        eg :- plain password "123456789" and salt "abcdefgh1234567890"
-                plain password + salt => hashing function => HASHED PASSWORD
+        eg :- plain password "123456789" and salt "abcdefgh"
+                plain password(123456789) + salt("abcdefgh") => hashing function => HASHED PASSWORD
+
+
+==================================================
+PASSPORT.JS AUTHENTICATION + SESSION NOTES
+==================================================
 
 passport js -->
     it is a authentication midleware in node.js
@@ -248,7 +253,6 @@ passport js -->
     npm i passport
     npm i passport-local
     npm i passport-local-mongoose
-
 
 ==================================================
 PASSPORT.JS AUTHENTICATION + SESSION NOTES
@@ -261,7 +265,6 @@ It helps handle:
 - User authentication
 - Sessions
 - Maintaining logged-in users
-
 
 --------------------------------------------------
 1. PASSPORT INITIALIZE
@@ -278,7 +281,6 @@ Function:
 
 Think:
 "Start Passport and make it ready."
-
 
 --------------------------------------------------
 2. PASSPORT SESSION
@@ -306,7 +308,6 @@ app.use(session(sessionOptions));
 app.use(passport.initialize());
 app.use(passport.session());
 
-
 --------------------------------------------------
 3. LOCAL STRATEGY
 --------------------------------------------------
@@ -315,8 +316,7 @@ Code:
 
 passport.use(new LocalStrategy(User.authenticate()));
 
-NOTE:
-Correct spelling is LocalStrategy, NOT LocalStratergy.
+NOTE: CORRECT SPELLING IS LocalStrategy, NOT LocalStratergy.
 
 Function:
 - Tells Passport to use username/password authentication.
@@ -374,7 +374,6 @@ Purpose:
 Easy meaning:
 
 "Which information about the user should I store in the session?"
-
 
 --------------------------------------------------
 5. DESERIALIZE USER
@@ -519,7 +518,6 @@ Complete User
   ↓
 req.user
 
-
 --------------------------------------------------
 8. MEANING OF EACH LINE
 --------------------------------------------------
@@ -624,3 +622,7 @@ deserializeUser()
 → ID → User → req.user
 
 ==================================================
+
+req.isAuthenticate -> check for user is already logined or not in our website
+it has 2 values
+true and false
