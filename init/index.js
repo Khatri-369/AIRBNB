@@ -15,12 +15,12 @@ async function main() {
     await mongoose.connect("mongodb://127.0.0.1:27017/airbnb");
 }
 
-const initDB = async () => {
+async function initDB() {
     await Listing.deleteMany({});
     const initListings = Initdata.data.map((obj) => ({
         ...obj,
-        image: typeof obj.image === "object" ? obj.image.url : obj.image,
+        owner: "6aaad365ddb5ad5956a41b05"
     }));
     await Listing.insertMany(initListings);
     console.log("DB INITIALIZED");
-};
+}

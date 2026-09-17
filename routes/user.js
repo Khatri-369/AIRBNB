@@ -3,6 +3,7 @@ const router = express.Router();
 const User = require("../model/user.js");
 const passport = require("passport");
 const WrapAsync = require("../utils/wrapAsync.js");
+const { saveRedirectUrl } = require("../middleware.js");
 
 //SIGNUP ROUTE
 router.get("/signup", (req, res) => {
@@ -38,9 +39,10 @@ router.get("/login", (req, res) => {
 
 //TO AUTHENTICATE THE USER WE USE THE MIDDLEWARE passport.authenticate
 //TO STORE THE USERS INTO THE SESSION WE USE THE MIDDLEWARE req.login
-router.post("/login", passport.authenticate("local", { failureRedirect: "/login", failureFlash: true }), async (req, res) => {
+//if the authentication is successfull then the passport clear all the data stored in the session (so we save the redirectUrl in the locals)
+router.post("/login", saveRedirectUrl, passport.authenticate("local", { failureRedirect: "/login", failureFlash: true }), async (req, res) => {
     req.flash("success", "WELCOME TO WANDERLUST ! You are logged in");
-    res.redirect("/listings");
+    res.redirect(res.locals.redirectUrl || "/listings");
 });
 
 router.get("/logout", (req, res, next) => {
