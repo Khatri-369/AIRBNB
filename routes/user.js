@@ -11,7 +11,7 @@ router.get("/signup", (req, res) => {
 });
 
 //SIGNUP POST REQUEST
-router.post("/signup", WrapAsync(async (req, res) => {
+router.post("/signup", WrapAsync(async (req, res, next) => {
     try {
         let { username, email, password } = req.body;
         const newUser = new User({
@@ -19,13 +19,14 @@ router.post("/signup", WrapAsync(async (req, res) => {
             username
         });
         const registeredUser = await User.register(newUser, password);
+        // TO LOGIN THE USER DIRECTLY AFTER SIGNUP IT IS A FUNCTION
         req.login(registeredUser, (err) => {
             if (err) {
                 return next(err);
             }
             req.flash("success", "REGISTER SUCCESSFULLY");
             res.redirect("/listings");
-        }); // TO LOGIN THE USER DIRECTLY AFTER SIGNUP IT IS A FUNCTION
+        });
     } catch (e) {
         req.flash("error", e.message);
         res.redirect("/signup");
@@ -40,6 +41,7 @@ router.get("/login", (req, res) => {
 //TO AUTHENTICATE THE USER WE USE THE MIDDLEWARE passport.authenticate
 //TO STORE THE USERS INTO THE SESSION WE USE THE MIDDLEWARE req.login
 //if the authentication is successfull then the passport clear all the data stored in the session (so we save the redirectUrl in the locals)
+//when a user login in normally via /login, passport.authenticate automatically calls req.login()
 router.post("/login", saveRedirectUrl, passport.authenticate("local", { failureRedirect: "/login", failureFlash: true }), async (req, res) => {
     req.flash("success", "WELCOME TO WANDERLUST ! You are logged in");
     res.redirect(res.locals.redirectUrl || "/listings");
