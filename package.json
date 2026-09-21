@@ -19,6 +19,7 @@
   },
   "homepage": "https://github.com/Khatri-369/AIRBNB#readme",
   "dependencies": {
+    "@mapbox/mapbox-sdk": "^0.16.2",
     "@types/connect-flash": "^0.0.40",
     "@types/passport-local-mongoose": "^6.1.5",
     "cloudinary": "^1.41.3",

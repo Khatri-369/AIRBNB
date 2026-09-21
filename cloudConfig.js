@@ -10,13 +10,14 @@ cloudinary.config({
 
 // Create Storage Instance
 const storage = new CloudinaryStorage({
+    cloudinary: cloudinary,
     params: {
         folder: "wanderlust_DEV",
         allowed_formats: ["jpg", "jpeg", "png", "webp"],
-        resource_type: "image",
     },
 });
 
 module.exports = {
+    cloudinary,
     storage,
 };
