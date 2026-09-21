@@ -4,57 +4,23 @@ const User = require("../model/user.js");
 const passport = require("passport");
 const WrapAsync = require("../utils/wrapAsync.js");
 const { saveRedirectUrl } = require("../middleware.js");
+const userController = require("../controllers/users.js");
 
-//SIGNUP ROUTE
-router.get("/signup", (req, res) => {
-    res.render("users/signup.ejs");
-});
+//for ("/signup")
+router.route("/signup")
+    .get(userController.renderSignupForm)
+    .post(WrapAsync(userController.signup));
 
-//SIGNUP POST REQUEST
-router.post("/signup", WrapAsync(async (req, res, next) => {
-    try {
-        let { username, email, password } = req.body;
-        const newUser = new User({
-            email,
-            username
-        });
-        const registeredUser = await User.register(newUser, password);
-        // TO LOGIN THE USER DIRECTLY AFTER SIGNUP IT IS A FUNCTION
-        req.login(registeredUser, (err) => {
-            if (err) {
-                return next(err);
-            }
-            req.flash("success", "REGISTER SUCCESSFULLY");
-            res.redirect("/listings");
-        });
-    } catch (e) {
-        req.flash("error", e.message);
-        res.redirect("/signup");
-    }
-}));
-
-//LOGIN USER
-router.get("/login", (req, res) => {
-    res.render("users/login.ejs");
-});
+//for ("/login")
+router.route("/login")
+    .get(userController.renderLoginForm)
+    .post(saveRedirectUrl, passport.authenticate("local", { failureRedirect: "/login", failureFlash: true }), userController.login);
 
 //TO AUTHENTICATE THE USER WE USE THE MIDDLEWARE passport.authenticate
 //TO STORE THE USERS INTO THE SESSION WE USE THE MIDDLEWARE req.login
 //if the authentication is successfull then the passport clear all the data stored in the session (so we save the redirectUrl in the locals)
 //when a user login in normally via /login, passport.authenticate automatically calls req.login()
-router.post("/login", saveRedirectUrl, passport.authenticate("local", { failureRedirect: "/login", failureFlash: true }), async (req, res) => {
-    req.flash("success", "WELCOME TO WANDERLUST ! You are logged in");
-    res.redirect(res.locals.redirectUrl || "/listings");
-});
-
-router.get("/logout", (req, res, next) => {
-    req.logout((err) => {
-        if (err) {
-            return next(err);
-        }
-        req.flash("success", "You are logged out successfully!");
-        res.redirect("/listings");
-    });
-});
+//LOGOUT ROUTE
+router.get("/logout", userController.logout);
 
 module.exports = router;
