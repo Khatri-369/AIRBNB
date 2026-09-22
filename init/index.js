@@ -19,8 +19,13 @@ async function initDB() {
     await Listing.deleteMany({});
     const initListings = Initdata.data.map((obj) => ({
         ...obj,
-        owner: "6aaad365ddb5ad5956a41b05"
+        owner: "6aaad365ddb5ad5956a41b05",
+        geometry: obj.geometry || {
+            type: "Point",
+            coordinates: [-74.0060, 40.7128]
+        }
     }));
     await Listing.insertMany(initListings);
     console.log("DB INITIALIZED");
+    await mongoose.disconnect();
 }
