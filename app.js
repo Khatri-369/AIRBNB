@@ -19,6 +19,7 @@ const cookieparser = require("cookie-parser");
 app.use(cookieparser("secretcode"));
 //SESSION
 const session = require("express-session");
+const { MongoStore } = require('connect-mongo');
 //FLASH
 const flash = require("express-flash");
 //ROUTES
@@ -35,8 +36,23 @@ app.set("view engine", "ejs"); //TELL SERVER TO RENDER EJS FILES
 app.set("views", path.join(__dirname, "views")); //TELL SERVER WHERE TO FIND EJS FILES
 app.use(express.static(path.join(__dirname, "/public")));
 
+const secret = process.env.SECRET || "mysupersecretstring";
+
+const store = MongoStore.create({
+    mongoUrl: process.env.ATLASDB_URL,
+    crypto: {
+        secret: secret,
+    },
+    touchAfter: 24 * 60 * 60, // time (in seconds) to "touch" a session to avoid re-saving
+});
+
+store.on("error", (err) => {
+    console.log("ERROR IN MONGO SESSION STORE", err);
+});
+
 const sessionOptions = {
-    secret: "mysupersecretstring",
+    store: store,
+    secret: secret,
     resave: false,
     saveUninitialized: true,
     cookie: {
@@ -45,6 +61,7 @@ const sessionOptions = {
         httpOnly: true, //CAN'T ACCESS COOKIE FROM CLIENT SIDE
     }
 };
+
 app.use(session(sessionOptions));
 app.use(flash());
 
@@ -55,7 +72,7 @@ passport.use(new LocalStrategy(User.authenticate()));
 passport.serializeUser(User.serializeUser()); //TO STORE SERAILZE USERS INTO THE SESSIONS
 passport.deserializeUser(User.deserializeUser());//TO STORE DE SERAILZE USERS INTO THE SESSIONS
 
-mongoose.connect("mongodb://localhost:27017/airbnb").then(() => {
+mongoose.connect(process.env.ATLASDB_URL).then(() => {
     console.log("DB CONNECTED");
 }
 ).catch((err) => {
@@ -95,6 +112,7 @@ app.use((err, req, res, next) => {
 });
 
 
-app.listen(8080, () => {
-    console.log("SERVER IS LISTNING TO PORT 8080");
+const port = process.env.PORT || 8080;
+app.listen(port, () => {
+    console.log(`SERVER IS LISTENING TO PORT ${port}`);
 });

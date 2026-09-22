@@ -623,8 +623,11 @@ deserializeUser()
 
 ==================================================
 
-req.isAuthenticate -> check for user is already logined or not in our website
-it has 2 values
-true and false
+MONGODB ATLAS CREDENTIALS:
+Username: khatriom12062007_db_user
+Password: Khat@2007
+Cluster: WanderLust
+Connection URL: mongodb+srv://khatriom12062007_db_user:Khat%402007@wanderlust.ddevo2p.mongodb.net/?retryWrites=true&w=majority&appName=WanderLust
+Saved in: .env (ATLASDB_URL)
 
 ==================================================
