@@ -256,6 +256,29 @@ a {
     border-color: #fe424d;
 }
 
+.tax-info {
+    display: none;
+}
+
+.btn-red {
+    background-color: #ff385c !important;
+    color: white !important;
+    border: none !important;
+    border-radius: 25px !important;
+    padding: 0.6rem 1.75rem !important;
+    font-weight: 600 !important;
+    transition: 0.2s ease !important;
+    box-shadow: 0 2px 4px rgba(255, 56, 92, 0.2) !important;
+    display: inline-block;
+}
+
+.btn-red:hover {
+    background-color: #e00b41 !important;
+    color: white !important;
+    transform: scale(1.03);
+    box-shadow: 0 4px 10px rgba(255, 56, 92, 0.3) !important;
+}
+
 @media (max-width: 992px) {
     #filters-container {
         gap: 1rem;
