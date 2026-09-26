@@ -1,7 +1,6 @@
 const express = require("express");
 const router = express.Router();
 const User = require("../model/user.js");
-const passport = require("passport");
 const WrapAsync = require("../utils/wrapAsync.js");
 const { saveRedirectUrl } = require("../middleware.js");
 const userController = require("../controllers/users.js");
@@ -14,7 +13,7 @@ router.route("/signup")
 //for ("/login")
 router.route("/login")
     .get(userController.renderLoginForm)
-    .post(saveRedirectUrl, passport.authenticate("local", { failureRedirect: "/login", failureFlash: true }), userController.login);
+    .post(saveRedirectUrl, WrapAsync(userController.login));
 
 //TO AUTHENTICATE THE USER WE USE THE MIDDLEWARE passport.authenticate
 //TO STORE THE USERS INTO THE SESSION WE USE THE MIDDLEWARE req.login

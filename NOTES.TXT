@@ -631,3 +631,51 @@ Connection URL: mongodb+srv://khatriom12062007_db_user:Khat%402007@wanderlust.dd
 Saved in: .env (ATLASDB_URL)
 
 ==================================================
+
+JWT HAS THREE PARTS
+HEADER(encoding).PAYLOAD.SIGNATURE
+🔹 Encoding
+
+Converts data into a different format for storage or transmission. It provides no security.
+
+Example:
+Hello → SGVsbG8= (Base64)
+
+🔹 Encryption
+
+Converts readable data (plaintext) into unreadable data (ciphertext) to provide confidentiality. It can be reversed using the appropriate key.
+
+Example:
+Hello → X7a9@2... → Hello
+
+🔹 Hashing
+
+Converts data into a fixed-length hash mainly for verification and integrity. It is designed to be one-way.
+
+Example:
+Hello → 185f8db3...
+
+🧠 Remember
+
+Encoding = Format
+Encryption = Secret 🔒
+Hashing = Fingerprint #️⃣
+
+
+Short Note: bcrypt.hash(this.password, 12)
+bcrypt.hash(this.password, 12)
+bcrypt → Library used for secure password hashing.
+hash() → Converts the password into a one-way hash.
+this.password → The user's original password.
+12 → Cost factor/salt rounds; higher values require more computation.
+
+Example:
+
+"hello123"
+    ↓
+bcrypt.hash("hello123", 12)
+    ↓
+"$2b$12$..........."
+
+🔑 Password → Hash → Store in database
+The original password is not stored and the hash is not decrypted.

@@ -26,6 +26,9 @@ const flash = require("express-flash");
 const listingsRouters = require("./routes/listing.js");
 const reviewsRouters = require("./routes/review.js");
 const userRouter = require("./routes/user.js");
+//JWT
+const jwt = require("jsonwebtoken");
+
 
 //MIDDLEWARE
 app.use(express.json());
@@ -65,12 +68,12 @@ const sessionOptions = {
 app.use(session(sessionOptions));
 app.use(flash());
 
-//PASSPORT AUTHENTICATION 
-app.use(passport.initialize());
-app.use(passport.session());
-passport.use(new LocalStrategy(User.authenticate()));
-passport.serializeUser(User.serializeUser()); //TO STORE SERAILZE USERS INTO THE SESSIONS
-passport.deserializeUser(User.deserializeUser());//TO STORE DE SERAILZE USERS INTO THE SESSIONS
+// //PASSPORT AUTHENTICATION 
+// app.use(passport.initialize());
+// app.use(passport.session());
+// passport.use(new LocalStrategy(User.authenticate()));
+// passport.serializeUser(User.serializeUser()); //TO STORE SERAILZE USERS INTO THE SESSIONS
+// passport.deserializeUser(User.deserializeUser());//TO STORE DE SERAILZE USERS INTO THE SESSIONS
 
 mongoose.connect(process.env.ATLASDB_URL).then(() => {
     console.log("DB CONNECTED");
@@ -84,12 +87,55 @@ mongoose.connect(process.env.ATLASDB_URL).then(() => {
 // });
 
 //MIDDLEWARE FOR FLASH MESSAGE
+// Decode token for all requests to display user in navbar
 app.use((req, res, next) => {
+    const jwtToken = req.cookies.jwt;
+    if (jwtToken) {
+        try {
+            const verifiedUser = jwt.verify(jwtToken, process.env.JWT_SECRET);
+            req.user = verifiedUser;
+        } catch (err) {
+            req.user = null;
+            console.log(err);
+        }
+    } else {
+        req.user = null;
+    }
+    res.locals.currUser = req.user;
     res.locals.successMsg = req.flash("success");
     res.locals.errorMsg = req.flash("error");
-    res.locals.currUser = req.user;
     next();
 });
+
+//           User makes request
+//                  ↓
+//           This middleware
+//                  ↓
+//          Get JWT from cookie
+//                  ↓
+//           Does JWT exist?
+//             /          \
+//           YES           NO
+//            ↓             ↓
+//       jwt.verify()   req.user = null
+//            ↓
+//       Valid JWT?
+//        /       \
+//      YES       NO
+//       ↓         ↓
+// req.user =    req.user = null
+// verifiedUser
+//       \         /
+//        \       /
+//         ↓     ↓
+//   res.locals.currUser
+//   res.locals.successMsg
+//   res.locals.errorMsg
+//             ↓
+//           next()
+//             ↓
+//          Route/EJS
+
 
 // LISTINGS ROUTE
 app.use("/listings", listingsRouters);

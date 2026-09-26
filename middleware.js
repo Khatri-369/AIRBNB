@@ -2,15 +2,25 @@ const Listing = require("./model/listing.js");
 const ExpressError = require("./public/js/ExpressError.js");
 const { listingSchema, reviewSchema } = require("./Schema.js");
 const Review = require("./model/review.js");
+const jwt = require("jsonwebtoken");
 
+//AUTHENTICATION MIDDLEWARE
 module.exports.isLoggedIn = (req, res, next) => {
-    if (!req.isAuthenticated()) {
-        //REDIRECT URL
+    const token = req.cookies.jwt;
+    if (!token) {
         req.session.redirectUrl = req.originalUrl;
         req.flash("error", "You must be logged in first!");
         return res.redirect("/login");
     }
-    next();
+    try {
+        const verifiedUser = jwt.verify(token, process.env.JWT_SECRET);
+        req.user = verifiedUser;
+        next();
+    } catch (error) {
+        res.clearCookie("jwt");
+        req.flash("error", "Invalid token");
+        return res.redirect("/login");
+    }
 }
 
 module.exports.saveRedirectUrl = (req, res, next) => {
