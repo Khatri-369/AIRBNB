@@ -679,3 +679,11 @@ bcrypt.hash("hello123", 12)
 
 🔑 Password → Hash → Store in database
 The original password is not stored and the hash is not decrypted.
+
+
+Browser Request ──► app.js (Middlewares) ──► routes/ ──► controllers/ ──► model/ (MongoDB)
+                                                               │
+Browser Response ◄── HTML Page (EJS) ◄── views/ ◄──────────────┘
+
+
+see the cascading deletion

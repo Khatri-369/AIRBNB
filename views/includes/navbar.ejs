@@ -71,8 +71,9 @@
 
             <div class="navbar-search-center">
                 <form class="d-flex align-items-center" role="search" action="/listings" method="GET">
-                    <input class="form-control search-inp me-2" type="search" placeholder="Search destinations" aria-label="Search"
-                        name="search" value="<%= typeof search !== 'undefined' && search ? search : '' %>">
+                    <input class="form-control search-inp me-2" type="search" placeholder="Search destinations"
+                        aria-label="Search" name="search"
+                        value="<%= typeof search !== 'undefined' && search ? search : '' %>">
                     <button class="btn-search" type="submit">
                         <i class="fa-solid fa-magnifying-glass"></i>
                     </button>
@@ -82,11 +83,14 @@
             <div class="navbar-nav ms-auto align-items-lg-center">
                 <a class="nav-link" href="/listings/new"><b>Add Your Home</b></a>
                 <% if(currUser){ %>
+                    <span class="nav-link text-secondary">Welcome, <b>
+                            <%= currUser.username %>
+                        </b></span>
                     <a class="nav-link ms-lg-2" href="/logout"><b>Log Out</b></a>
-                <% } else { %>
-                    <a class="nav-link ms-lg-2" href="/login"><b>Login</b></a>
-                    <a class="nav-link ms-lg-2" href="/signup"><b>Sign Up</b></a>
-                <% } %>
+                    <% } else { %>
+                        <a class="nav-link ms-lg-2" href="/login"><b>Login</b></a>
+                        <a class="nav-link ms-lg-2" href="/signup"><b>Sign Up</b></a>
+                        <% } %>
             </div>
         </div>
     </div>

@@ -7,11 +7,6 @@ const path = require("path");
 const methodOverride = require("method-override");
 const ejsMate = require("ejs-mate");
 
-//PASSPORT JS
-const passport = require("passport");
-const LocalStrategy = require("passport-local");
-const User = require("./model/user.js");
-
 //ERRORS    
 const ExpressError = require("./public/js/ExpressError.js");
 //COOKIE
@@ -29,11 +24,12 @@ const userRouter = require("./routes/user.js");
 //JWT
 const jwt = require("jsonwebtoken");
 
-
 //MIDDLEWARE
 app.use(express.json());
+
 app.use(express.urlencoded({ extended: true })); //USE FOR TAKING FORM DATA AND USE FOR GROUPING FORM NAME LIKE listings[title]
 app.use(methodOverride("_method")); //USE FOR OVERRIDING METHODS (PUT,DELETE)
+
 app.engine("ejs", ejsMate); //USE FOR EJS MATE
 app.set("view engine", "ejs"); //TELL SERVER TO RENDER EJS FILES
 app.set("views", path.join(__dirname, "views")); //TELL SERVER WHERE TO FIND EJS FILES
@@ -68,13 +64,6 @@ const sessionOptions = {
 app.use(session(sessionOptions));
 app.use(flash());
 
-// //PASSPORT AUTHENTICATION 
-// app.use(passport.initialize());
-// app.use(passport.session());
-// passport.use(new LocalStrategy(User.authenticate()));
-// passport.serializeUser(User.serializeUser()); //TO STORE SERAILZE USERS INTO THE SESSIONS
-// passport.deserializeUser(User.deserializeUser());//TO STORE DE SERAILZE USERS INTO THE SESSIONS
-
 mongoose.connect(process.env.ATLASDB_URL).then(() => {
     console.log("DB CONNECTED");
 }
@@ -82,12 +71,12 @@ mongoose.connect(process.env.ATLASDB_URL).then(() => {
     console.log(err);
 });
 
-// app.get("/", (req, res) => {
-//     res.send("GOTO /listings to see all listings");
-// });
+app.get("/", (req, res) => {
+    res.redirect("/listings");
+});
 
 //MIDDLEWARE FOR FLASH MESSAGE
-// Decode token for all requests to display user in navbar
+// THIS MIDDLEWARE RUNS EVERY TIME BECAUSE IT HAS NO SPECIFIC PATH
 app.use((req, res, next) => {
     const jwtToken = req.cookies.jwt;
     if (jwtToken) {
@@ -106,36 +95,6 @@ app.use((req, res, next) => {
     res.locals.errorMsg = req.flash("error");
     next();
 });
-
-//           User makes request
-//                  ↓
-//           This middleware
-//                  ↓
-//          Get JWT from cookie
-//                  ↓
-//           Does JWT exist?
-//             /          \
-//           YES           NO
-//            ↓             ↓
-//       jwt.verify()   req.user = null
-//            ↓
-//       Valid JWT?
-//        /       \
-//      YES       NO
-//       ↓         ↓
-// req.user =    req.user = null
-// verifiedUser
-//       \         /
-//        \       /
-//         ↓     ↓
-//   res.locals.currUser
-//   res.locals.successMsg
-//   res.locals.errorMsg
-//             ↓
-//           next()
-//             ↓
-//          Route/EJS
-
 
 // LISTINGS ROUTE
 app.use("/listings", listingsRouters);
@@ -158,7 +117,7 @@ app.use((err, req, res, next) => {
 });
 
 
-const port = process.env.PORT || 8080;
-app.listen(port, () => {
-    console.log(`SERVER IS LISTENING TO PORT ${port}`);
+const PORT = process.env.PORT || 8080;
+app.listen(PORT, () => {
+    console.log(`SERVER IS LISTENING TO PORT ${PORT}`);
 });

@@ -8,7 +8,6 @@ const jwt = require("jsonwebtoken");
 module.exports.isLoggedIn = (req, res, next) => {
     const token = req.cookies.jwt;
     if (!token) {
-        req.session.redirectUrl = req.originalUrl;
         req.flash("error", "You must be logged in first!");
         return res.redirect("/login");
     }
@@ -24,9 +23,10 @@ module.exports.isLoggedIn = (req, res, next) => {
 }
 
 module.exports.saveRedirectUrl = (req, res, next) => {
-    if (req.session.redirectUrl) {
-        res.locals.redirectUrl = req.session.redirectUrl;
+    if (req.user) {
+        return next();
     }
+    req.session.redirectUrl = req.originalUrl;
     next();
 }
 
@@ -42,11 +42,14 @@ module.exports.isOwner = async (req, res, next) => {
 
 // LISTING SCHEMA VALIDATING USING JOI
 module.exports.validateListing = (req, res, next) => {
+    // 1. Validate req.body against Joi schema
     let { error } = listingSchema.validate(req.body);
     if (error) {
+        // If invalid: extract error message and pass to error handler
         let errMsg = error.details.map((el) => el.message).join(",");
         return next(new ExpressError(400, errMsg));
     } else {
+        // If valid: continue to the next function (the controller)
         next();
     }
 };

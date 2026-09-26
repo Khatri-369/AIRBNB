@@ -21,10 +21,11 @@ const UserSchema = new Schema({
 //HASH PASSWORD BEFORE SAVING(SIGNUP/UPDATE PASSWORD)
 UserSchema.pre("save", async function () {
     if (!this.isModified("password")) return;
-    this.password = await bcrypt.hash(this.password, 12);
+    const salt = await bcrypt.genSalt(12);
+    this.password = await bcrypt.hash(this.password, salt);
 });
 
-//HELPER METHOD TO COMPAARE PASSWORD(LOGIN)
+//HELPER METHOD TO COMPARE PASSWORD(LOGIN)
 UserSchema.methods.comparePassword = async function (candidatePassword) {
     return await bcrypt.compare(candidatePassword, this.password);
 };
