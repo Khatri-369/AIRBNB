@@ -11,7 +11,7 @@ const ejsMate = require("ejs-mate");
 const ExpressError = require("./public/js/ExpressError.js");
 //COOKIE
 const cookieparser = require("cookie-parser");
-app.use(cookieparser("secretcode"));
+app.use(cookieparser(process.env.COOKIE_SECRET));
 //SESSION
 const session = require("express-session");
 const { MongoStore } = require('connect-mongo');
@@ -25,18 +25,21 @@ const userRouter = require("./routes/user.js");
 const jwt = require("jsonwebtoken");
 
 //MIDDLEWARE
-app.use(express.json());
-
+app.use(express.json()); // USE FOR TAKING JSON DATA AND CONVERT TO JS OBJECT
 app.use(express.urlencoded({ extended: true })); //USE FOR TAKING FORM DATA AND USE FOR GROUPING FORM NAME LIKE listings[title]
 app.use(methodOverride("_method")); //USE FOR OVERRIDING METHODS (PUT,DELETE)
 
+//TEMPLATE ENGINE
 app.engine("ejs", ejsMate); //USE FOR EJS MATE
 app.set("view engine", "ejs"); //TELL SERVER TO RENDER EJS FILES
 app.set("views", path.join(__dirname, "views")); //TELL SERVER WHERE TO FIND EJS FILES
+
+//STATIC FILES
 app.use(express.static(path.join(__dirname, "/public")));
 
-const secret = process.env.SECRET || "mysupersecretstring";
+const secret = process.env.SECRET || "mysupersecretstring"; //SECRET FOR SIGNING THE SESSION
 
+//SEE THE STORE OBJECT IN THE MONGO DB AFTER RUNNING THE SERVER
 const store = MongoStore.create({
     mongoUrl: process.env.ATLASDB_URL,
     crypto: {
@@ -61,6 +64,7 @@ const sessionOptions = {
     }
 };
 
+//SEE THE SESSION AND REMOVE THIS LINE AFTER COMPLTE SESSION
 app.use(session(sessionOptions));
 app.use(flash());
 
@@ -69,10 +73,6 @@ mongoose.connect(process.env.ATLASDB_URL).then(() => {
 }
 ).catch((err) => {
     console.log(err);
-});
-
-app.get("/", (req, res) => {
-    res.redirect("/listings");
 });
 
 //MIDDLEWARE FOR FLASH MESSAGE
@@ -115,7 +115,6 @@ app.use((err, req, res, next) => {
     let { status = 500, message = "Something went wrong!" } = err;
     res.status(status).render("listings/error.ejs", { err });
 });
-
 
 const PORT = process.env.PORT || 8080;
 app.listen(PORT, () => {

@@ -15,10 +15,6 @@ router.route("/login")
     .get(userController.renderLoginForm)
     .post(saveRedirectUrl, WrapAsync(userController.login));
 
-//TO AUTHENTICATE THE USER WE USE THE MIDDLEWARE passport.authenticate
-//TO STORE THE USERS INTO THE SESSION WE USE THE MIDDLEWARE req.login
-//if the authentication is successfull then the passport clear all the data stored in the session (so we save the redirectUrl in the locals)
-//when a user login in normally via /login, passport.authenticate automatically calls req.login()
 //LOGOUT ROUTE
 router.get("/logout", userController.logout);
 

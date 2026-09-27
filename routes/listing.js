@@ -11,24 +11,26 @@ const upload = multer({ storage });
 
 //FOR ("/")
 router.route("/")
-    .get(wrapAsync(listingController.index))
+    .get(wrapAsync(listingController.index)) //SHOW ALL
     .post(
         isLoggedIn,
         upload.single('listing[image]'),
         validateListing,
-        wrapAsync(listingController.createListing)
+        wrapAsync(listingController.createListing) //CREATE
     );
 
 // NEW ROUTE
-router.get("/new", isLoggedIn, listingController.renderNewForm);
+router.route("/new")
+    .get(isLoggedIn, listingController.renderNewForm);
 
 // FOR("/:id")
 router.route("/:id")
-    .get(wrapAsync(listingController.showListing))
-    .put(isLoggedIn, isOwner, upload.single('listing[image]'), validateListing, wrapAsync(listingController.updateListing))
-    .delete(isLoggedIn, isOwner, wrapAsync(listingController.deleteListing));
+    .get(wrapAsync(listingController.showListing)) //SHOW
+    .put(isLoggedIn, isOwner, upload.single('listing[image]'), validateListing, wrapAsync(listingController.updateListing)) //UPDATE
+    .delete(isLoggedIn, isOwner, wrapAsync(listingController.deleteListing)); //DELETE
 
 // EDIT ROUTE
-router.get("/:id/edit", isLoggedIn, isOwner, wrapAsync(listingController.editListing));
+router.route("/:id/edit")
+    .get(isLoggedIn, isOwner, wrapAsync(listingController.editListing)); //EDIT
 
 module.exports = router;

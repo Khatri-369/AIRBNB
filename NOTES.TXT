@@ -109,6 +109,7 @@ to solve server side -> JOI(DB SCHEMA VALIDATION IN app.js),MANUAL VALIDATION(Ex
 
 to get params of parent in child we do express.Router({ mergeParams: true })
 
+//COOKIES
 cookie store as {key: value} format 
 res.cookie("name", value, {maxAge: 1000000})
 
