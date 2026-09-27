@@ -9,9 +9,11 @@ const ejsMate = require("ejs-mate");
 
 //ERRORS    
 const ExpressError = require("./public/js/ExpressError.js");
+
 //COOKIE
 const cookieparser = require("cookie-parser");
 app.use(cookieparser(process.env.COOKIE_SECRET));
+
 //SESSION
 const session = require("express-session");
 const { MongoStore } = require('connect-mongo');

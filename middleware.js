@@ -8,6 +8,8 @@ const jwt = require("jsonwebtoken");
 module.exports.isLoggedIn = (req, res, next) => {
     const token = req.cookies.jwt;
     if (!token) {
+        // Save the page they were trying to visit into MongoDB session
+        req.session.redirectUrl = req.originalUrl;
         req.flash("error", "You must be logged in first!");
         return res.redirect("/login");
     }
@@ -20,15 +22,16 @@ module.exports.isLoggedIn = (req, res, next) => {
         req.flash("error", "Invalid token");
         return res.redirect("/login");
     }
-}
+};
 
+// 2. When they submit the login form on POST /login:
 module.exports.saveRedirectUrl = (req, res, next) => {
-    if (req.user) {
-        return next();
+    if (req.session.redirectUrl) {
+        // Transfer from session to res.locals so the controller can read it
+        res.locals.redirectUrl = req.session.redirectUrl;
     }
-    req.session.redirectUrl = req.originalUrl;
     next();
-}
+};
 
 module.exports.isOwner = async (req, res, next) => {
     let { id } = req.params;
