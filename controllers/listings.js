@@ -11,7 +11,6 @@ module.exports.index = async (req, res) => {
     if (category) {
         filter.category = category.toLowerCase();
     }
-
     if (search && search.trim() !== "") {
         filter.$or = [
             { title: { $regex: search, $options: "i" } },
