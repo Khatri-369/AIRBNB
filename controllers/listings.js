@@ -33,9 +33,10 @@ module.exports.createListing = async (req, res, next) => {
         limit: 1
     }).send();
 
+    // Multer provides these two properties on req.file:
+    let url = req.file.path;           // The Cloudinary HTTPS image link
+    let filename = req.file.filename; // Cloudinary public ID
 
-    let url = req.file.path;
-    let filename = req.file.filename;
     const newListing = new Listing(req.body.listing);
     newListing.image = { url, filename };
     newListing.owner = req.user._id;

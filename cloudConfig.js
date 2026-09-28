@@ -1,14 +1,14 @@
 const cloudinary = require('cloudinary').v2;
 const { CloudinaryStorage } = require('multer-storage-cloudinary');
 
-// Configuration 
+// 1. Authenticate with your Cloudinary credentials from .env
 cloudinary.config({
     cloud_name: process.env.CLOUD_NAME,
     api_key: process.env.CLOUD_API_KEY,
     api_secret: process.env.CLOUD_API_SECRET
 });
 
-// Create Storage Instance
+// 2. Configure Cloudinary folder and allowed formats
 const storage = new CloudinaryStorage({
     cloudinary: cloudinary,
     params: {
@@ -17,7 +17,4 @@ const storage = new CloudinaryStorage({
     },
 });
 
-module.exports = {
-    cloudinary,
-    storage,
-};
+module.exports = { cloudinary, storage };

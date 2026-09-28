@@ -4,6 +4,7 @@ const jwt = require("jsonwebtoken");
 //HELPER FUNCTION TO SIGN AND SET TOKE COOKIE
 const sendTokenResponse = (user, req, res, redirectUrl, message) => {
     //MAKE JWT TOKEN
+    //jwt.sign(payload, secretOrPrivateKey, [options])
     const token = jwt.sign({
         _id: user._id,
         username: user.username,

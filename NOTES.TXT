@@ -688,3 +688,5 @@ Browser Response ◄── HTML Page (EJS) ◄── views/ ◄─────�
 
 
 see the cascading deletion
+
+👉 Multer is the middleware that intercepts multipart/form-data, extracts the file, and puts text into req.body and the file into req.file.
